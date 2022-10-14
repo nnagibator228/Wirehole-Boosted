@@ -21,4 +21,4 @@ chmod +x install_script.sh && ./install_script.sh
  - ### Where to get additional block lists?
  https://firebog.net/ - that blocklist connection list website. Taken from the original Wirehole repo;
 # Infrastructure model
-![infra scheme](https://github.com/nnagibator228/Wirehole-Boosted/scheme.png)
+![infra scheme](https://github.com/nnagibator228/Wirehole-Boosted/blob/main/scheme.png)
