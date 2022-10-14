@@ -1,0 +1,97 @@
+version: "3.8"
+
+services:
+  wireguard:
+    image: linuxserver/wireguard
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      - 'PUID=1001'
+      - 'PGID=1001'
+      - 'TZ=Europe/Moscow'
+      - 'SERVERURL=auto'
+      - 'SERVERPORT=51820'
+      - 'PEERS=6'
+      - 'PEERDNS=172.24.0.3'
+      - 'INTERNAL_SUBNET=10.13.13.0'
+    volumes:
+      - '/etc/wireguard/config:/config'
+      - '/lib/modules:/lib/modules'
+    ports:
+      - 51820:51820/udp
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+    networks:
+      wireguard:
+          ipv4_address: 172.24.0.2
+
+  unbound:
+    image: mvance/unbound:latest
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - '/etc/unbound/:/opt/unbound/etc/unbound/'
+    networks:
+      wireguard:
+          ipv4_address: 172.24.0.7
+
+  doh-cloudflare:
+    image: crazymax/cloudflared:latest
+    restart: unless-stopped
+    command: proxy-dns
+    environment:
+      - TUNNEL_DNS_PORT=53
+      - TUNNEL_DNS_ADDRESS=0.0.0.0
+      - TUNNEL_DNS_UPSTREAM=https://1.1.1.1/dns-query,https://1.0.0.1/dns-query,https://9.9.9.9/dns-query,https://149.112.112.9/dns-query
+    networks:
+      wireguard:
+          ipv4_address: 172.24.0.9
+
+  pihole:
+    image: pihole/pihole:latest
+    restart: unless-stopped
+    environment:
+      - WEBPASSWORD=
+      - DNS1=172.24.0.7
+      - DNS2=no
+      - DNSMASQ_LISTENING=all
+    # Volumes store your data between container upgrades
+    volumes:
+       - '/etc/pihole:/etc/pihole/'
+       - '/etc/wireguard/dnsmasq.d:/etc/dnsmasq.d/'
+       - '/etc/pihole/run/:/run/'
+    dns:
+      - 127.0.0.1
+      - 1.1.1.1
+    cap_add:
+      - NET_ADMIN
+    networks:
+      wireguard:
+          ipv4_address: 172.24.0.3
+
+  ipsec:
+    image: hwdsl2/ipsec-vpn-server
+    restart: always
+    environment:
+      - VPN_DNS_SRV1=1.1.1.1
+      - VPN_DNS_SRV2=1.0.0.1
+    ports:
+      - 500:500/udp
+      - 4500:4500/udp
+    volumes:
+      - '/etc/ipsec:/etc/ipsec.d'
+      - '/lib/modules:/lib/modules:ro'
+    networks:
+      wireguard:
+          ipv4_address: 172.24.0.5
+
+networks:
+  wireguard:
+    ipam:
+        driver: default
+        config:
+            - subnet: 172.24.0.0/16
