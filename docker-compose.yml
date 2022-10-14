@@ -65,8 +65,7 @@ services:
        - '/etc/wireguard/dnsmasq.d:/etc/dnsmasq.d/'
        - '/etc/pihole/run/:/run/'
     dns:
-      - 127.0.0.1
-      - 1.1.1.1
+      - 172.24.0.7
     cap_add:
       - NET_ADMIN
     networks:
@@ -77,8 +76,8 @@ services:
     image: hwdsl2/ipsec-vpn-server
     restart: always
     environment:
-      - VPN_DNS_SRV1=1.1.1.1
-      - VPN_DNS_SRV2=1.0.0.1
+      - VPN_DNS_SRV1=172.24.0.3
+      - VPN_DNS_SRV2=172.24.0.3
     ports:
       - 500:500/udp
       - 4500:4500/udp
