@@ -75,6 +75,7 @@ services:
   ipsec:
     image: hwdsl2/ipsec-vpn-server
     restart: always
+    privileged: true
     environment:
       - VPN_DNS_SRV1=172.24.0.3
       - VPN_DNS_SRV2=172.24.0.3
