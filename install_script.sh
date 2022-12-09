@@ -22,6 +22,7 @@ sudo curl -L "https://github.com/docker/compose/releases/download/1.26.2/docker-
 sudo chmod +x /usr/local/bin/docker-compose &&
 sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 
-sudo mkdir /etc/{wireguard,ipsec,pihole,unbound}
+sudo mkdir /etc/{wireguard,ipsec,pihole,unbound,prometheus}
 mv unbound.conf /etc/unbound/
+mv prometheus.yml /etc/prometheus/
 docker-compose up
