@@ -4,6 +4,7 @@ Imprelemntation of Wirehole with Prometheus/Grafana monitoring accessed from ext
  - Clone repo
  - Enter folder
  - Run the installation script with flags:
+
  **-u / --user** - Traefik BasicAuth username;
  **-p / --passwd** - Traefik BasicAuth password (would be hashed);
 If flags are not specified, than default credentials would be **test123:TestForVPN123**
