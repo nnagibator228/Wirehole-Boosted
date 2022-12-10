@@ -1,6 +1,24 @@
 version: "3.8"
 
 services:
+
+  traefik:
+    image: traefik:latest
+    ports:
+      - '80:80'
+      - '8080:8080'
+    command:
+      - "--providers.docker"
+      - "--log.level=DEBUG"
+      - "--log.filePath=/var/log/traefik.log"
+      - "--entrypoints.web.address=:80"
+      - "--providers.docker"
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock'
+    networks:
+      proxy:
+        ipv4_address: 192.12.0.33
+
   wireguard:
     image: linuxserver/wireguard
     restart: unless-stopped
@@ -44,22 +62,23 @@ services:
     restart: unless-stopped
     command: proxy-dns
     environment:
-      - TUNNEL_DNS_PORT=53
-      - TUNNEL_DNS_ADDRESS=0.0.0.0
-      - TUNNEL_DNS_UPSTREAM=https://1.1.1.1/dns-query,https://1.0.0.1/dns-query,https://9.9.9.9/dns-query,https://149.112.112.9/dns-query
+      - 'TUNNEL_DNS_PORT=53'
+      - 'TUNNEL_DNS_ADDRESS=0.0.0.0'
+      - 'TUNNEL_DNS_UPSTREAM=https://1.1.1.1/dns-query,https://1.0.0.1/dns-query,https://9.9.9.9/dns-query,https://149.112.112.9/dns-query'
     networks:
       wireguard:
           ipv4_address: 172.24.0.9
 
   pihole:
-    hostname: pi.hole
     image: pihole/pihole:latest
+    expose:
+      - 8080
     restart: unless-stopped
     environment:
-      - WEBPASSWORD=
-      - DNS1=172.24.0.7
-      - DNS2=no
-      - DNSMASQ_LISTENING=all
+      - 'WEBPASSWORD=test123'
+      - 'DNS1=172.24.0.7'
+      - 'DNS2=no'
+      - 'DNSMASQ_LISTENING=all'
     # Volumes store your data between container upgrades
     volumes:
        - '/etc/pihole:/etc/pihole/'
@@ -72,14 +91,25 @@ services:
     networks:
       wireguard:
           ipv4_address: 172.24.0.3
+      proxy:
+          ipv4_address: 192.12.0.3
+    labels:
+      - 'traefik.enable=true'
+      - "traefik.http.routers.pihole.entrypoints=web"
+      - "traefik.http.routers.pihole.rule=PathPrefix(`/admin/`)"
+      - "traefik.http.middlewares.sauth.basicauth.users=<username>:<passwrdhash>"
+      - "traefik.http.middlewares.sauth.basicauth.removeheader=true"
+      - "traefik.http.routers.pihole.middlewares=sauth"
+      - "traefik.http.routers.pihole.service=pihole"
+      - "traefik.http.services.pihole.loadbalancer.server.port=80"
 
   ipsec:
     image: hwdsl2/ipsec-vpn-server
     restart: always
     privileged: true
     environment:
-      - VPN_DNS_SRV1=172.24.0.3
-      - VPN_DNS_SRV2=172.24.0.3
+      - 'VPN_DNS_SRV1=172.24.0.3'
+      - 'VPN_DNS_SRV2=172.24.0.3'
     ports:
       - 500:500/udp
       - 4500:4500/udp
@@ -137,24 +167,47 @@ services:
     hostname: prometheus
     image: prom/prometheus:latest
     restart: unless-stopped
+    expose:
+      - 9090
     volumes:
       - '/etc/prometheus/:/etc/prometheus/'
+    command:
+      - '--web.external-url=http://$$(hostname):9090/prometheus/'
+      - '--config.file=/etc/prometheus/prometheus.yml'
     networks:
       wireguard:
-          ipv4_address: 172.24.0.12
+          ipv4_address: 172.24.0.6
+      proxy:
+          ipv4_address: 192.12.0.12
+    labels:
+      - 'traefik.enable=true'
+      - "traefik.http.routers.prometheus.entrypoints=web"
+      - "traefik.http.routers.prometheus.rule=PathPrefix(`/prometheus/`)"
+      - "traefik.http.routers.prometheus.middlewares=sauth"
 
   grafana:
     hostname: grafana
-    image: grafana/grafana
+    image: grafana/grafana:latest
     #environment:
     #  GF_SMTP_ENABLED: "true"
     #  GF_SMTP_HOST: "mailgateway:25"
     #  GF_SMTP_FROM_ADDRESS: "alert@myhost.com"
+    expose:
+      - 3000
     volumes:
-      - grafana-data:/var/lib/grafana
+      - '/etc/grafana/:/etc/grafana/'
     networks:
       wireguard:
           ipv4_address: 172.24.0.4
+      proxy:
+          ipv4_address: 192.12.0.5
+    labels:
+      - 'traefik.enable=true'
+      - "traefik.http.routers.grafana.entrypoints=web"
+      - "traefik.http.routers.grafana.rule=PathPrefix(`/grafana/`)"
+      - "traefik.http.routers.grafana.middlewares=sauth"
+      - "traefik.http.routers.pihole.service=pihole"
+      - "traefik.http.services.pihole.loadbalancer.server.port=3000"
 
 networks:
   wireguard:
@@ -162,7 +215,9 @@ networks:
         driver: default
         config:
             - subnet: 172.24.0.0/16
-
-volumes:
-  grafana-data:
+  proxy:
+    ipam:
+        driver: default
+        config:
+            - subnet: 192.12.0.0/16
 
