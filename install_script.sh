@@ -59,6 +59,6 @@ mv prometheus.yml /etc/prometheus/
 mv grafana.ini /etc/grafana/
 
 sed -i "s/<username>/$usern/" docker-compose.yml
-sed -i "s/<passwdhash>/$passwd_hash/" docker-compose.yml
+sed -i "s/<passwrdhash>/$passwd_hash/" docker-compose.yml
 
 docker-compose up -d
