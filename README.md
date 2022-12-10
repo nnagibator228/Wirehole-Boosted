@@ -1,19 +1,27 @@
 # Wirehole-Boosted
-Imprelemntation of Wirehole with Prometheus/Grafana monitoring and extra DNS over https by Cloudfare & IPsec for Linux compatability.
+Imprelemntation of Wirehole with Prometheus/Grafana monitoring accessed from external web by ip with Traefik BasicAuth security and extra DNS over https by Cloudfare & IPsec for Linux compatability.
 # QuickStart
  - Clone repo
  - Enter folder
- - Run the installation script
+ - Run the installation script with flags:
+ **-u / --user** - Traefik BasicAuth username;
+ **-p / --passwd** - Traefik BasicAuth password (would be hashed);
+If flags are not specified, than default credentials would be **test123:TestForVPN123**
  - Set Pihole upstream DNS to 172.24.0.7 if not set (from web UI)
  - Set Prometheus as Grafana data source (from web UI)
  - Import selected Grafana monitoring dashboards from file (from web UI)
 ```
 git clone https://github.com/nnagibator228/Wirehole-Boosted.git
 cd Wirehole-Boosted
-chmod +x install_script.sh && ./install_script.sh
+chmod +x install_script.sh && ./install_script.sh -u admin -p admin
 ```
 
-![prom datasource import](https://github.com/nnagibator228/Wirehole-Boosted/blob/main/seq.png)
+![prom datasource import](https://github.com/nnagibator228/Wirehole-Boosted/blob/main/scheme.png)
+
+# Features to add
+ > Adding Heimdall or equivalent service for organizing dashboard links
+ 
+ > Adding OAuth2 external services for more security
 
 # FAQ
  - #### How to get IPsec credentials?
@@ -22,11 +30,11 @@ chmod +x install_script.sh && ./install_script.sh
  In order to add extra peers to wireguard, change ```PEERS``` env variable in compose file;
  In order to add extra peers to ipsec, use ```VPN_ADDL_USERS=additional_username_1 additional_username_2``` ```VPN_ADDL_PASSWORDS=additional_password_1 additional_password_2``` fields as env variables;
  - #### How to access Pihole Web UI?
- After connecting to vpn tunnel, access ```172.24.0.3```;
+ You can access —   ```<your server's ip>/admin/``` than authenticate with Traefik BasicAuth;
  - #### How to access Prometheus Web UI?
- After connecting to vpn tunnel, access ```172.24.0.12:9090```;
+ You can access —  ```<your server's ip>/prometheus/``` than authenticate with Traefik BasicAuth;
  - #### How to access Grafana Web UI?
- After connecting to vpn tunnel, access ```172.24.0.4:3000```;
+ You can access —  ```<your server's ip>/grafana/``` than authenticate with Traefik BasicAuth;
  - #### How to check WireGuard Exporter data?
  After connecting to vpn tunnel, access ```172.24.0.2:9586/metrics```;
  - #### How to check Node Exporter data?
@@ -42,4 +50,5 @@ chmod +x install_script.sh && ./install_script.sh
  - #### Where to get additional block lists?
  https://firebog.net/ - that blocklist connection list website. Taken from the original Wirehole repo;
 # VPN Infrastructure model
+
 ![infra scheme](https://github.com/nnagibator228/Wirehole-Boosted/blob/main/scheme.png)
