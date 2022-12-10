@@ -184,6 +184,8 @@ services:
       - "traefik.http.routers.prometheus.entrypoints=web"
       - "traefik.http.routers.prometheus.rule=PathPrefix(`/prometheus/`)"
       - "traefik.http.routers.prometheus.middlewares=sauth"
+      - "traefik.http.routers.prometheus.service=prometheus"
+      - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
 
   grafana:
     hostname: grafana
