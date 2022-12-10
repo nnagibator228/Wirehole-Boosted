@@ -1,5 +1,8 @@
 # Wirehole-Boosted
 Imprelemntation of Wirehole with Prometheus/Grafana monitoring and extra DNS over https by Cloudfare & IPsec for Linux compatability.
+
+#### Check out new ```/rproxy/``` branch. Allows you accessing web dashboards without entering internal VPN network only with public host IP
+
 # QuickStart
  - Clone repo
  - Enter folder
