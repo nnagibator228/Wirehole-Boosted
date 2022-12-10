@@ -206,8 +206,8 @@ services:
       - "traefik.http.routers.grafana.entrypoints=web"
       - "traefik.http.routers.grafana.rule=PathPrefix(`/grafana/`)"
       - "traefik.http.routers.grafana.middlewares=sauth"
-      - "traefik.http.routers.pihole.service=pihole"
-      - "traefik.http.services.pihole.loadbalancer.server.port=3000"
+      - "traefik.http.routers.grafana.service=grafana"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
 
 networks:
   wireguard:
