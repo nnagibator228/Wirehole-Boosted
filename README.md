@@ -6,8 +6,11 @@ Imprelemntation of Wirehole with Prometheus/Grafana monitoring accessed from ext
  - Run the installation script with flags:
 
  **-u / --user** - Traefik BasicAuth username;
+ 
  **-p / --passwd** - Traefik BasicAuth password (would be hashed);
+ 
 If flags are not specified, than default credentials would be **test123:TestForVPN123**
+
  - Set Pihole upstream DNS to 172.24.0.7 if not set (from web UI)
  - Set Prometheus as Grafana data source (from web UI)
  - Import selected Grafana monitoring dashboards from file (from web UI)
