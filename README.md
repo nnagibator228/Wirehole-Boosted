@@ -16,7 +16,7 @@ cd Wirehole-Boosted
 chmod +x install_script.sh && ./install_script.sh -u admin -p admin
 ```
 
-![prom datasource import](https://github.com/nnagibator228/Wirehole-Boosted/blob/main/scheme.png)
+![prom datasource import](https://github.com/nnagibator228/Wirehole-Boosted/blob/main/seq.png)
 
 # Features to add
  > Adding Heimdall or equivalent service for organizing dashboard links
