@@ -1,4 +1,4 @@
-lobal:
+global:
   scrape_interval: 10s
   evaluation_interval: 10s
   external_labels:
