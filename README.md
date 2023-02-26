@@ -25,7 +25,7 @@ chmod +x install_script.sh && ./install_script.sh
  In order to add extra peers to wireguard, change ```PEERS``` env variable in compose file;
  In order to add extra peers to ipsec, use ```VPN_ADDL_USERS=additional_username_1 additional_username_2``` ```VPN_ADDL_PASSWORDS=additional_password_1 additional_password_2``` fields as env variables;
  - #### How to access Pihole Web UI?
- After connecting to vpn tunnel, access ```172.24.0.3```;
+ After connecting to vpn tunnel, access ```172.24.0.3/admin/```;
  - #### How to access Prometheus Web UI?
  After connecting to vpn tunnel, access ```172.24.0.12:9090```;
  - #### How to access Grafana Web UI?
