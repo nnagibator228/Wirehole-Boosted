@@ -25,4 +25,4 @@ sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 sudo mkdir /etc/{wireguard,ipsec,pihole,unbound,prometheus}
 mv unbound.conf /etc/unbound/
 mv prometheus.yml /etc/prometheus/
-docker-compose up -d
+sudo docker compose up -d
